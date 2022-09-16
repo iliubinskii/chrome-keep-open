@@ -52,7 +52,7 @@
     "upgrade": "npm run update-package-force && npm run npm:install"
   },
   "devDependencies": {
-    "eslint-plugin-misc": "^1.0.0",
+    "eslint-plugin-misc": "^1.1.0",
     "real-config": "^0.1.7",
     "types-fix": "^0.1.0",
     "webextension-polyfill": "^0.10.0"
@@ -63,8 +63,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "overrides": {
-    "package-json": "8.1.0"
   }
 }
