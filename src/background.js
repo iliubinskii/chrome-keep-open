@@ -69,7 +69,7 @@ async function handleEvent() {
     for (const window of windows) {
       await createPinnedTab(window);
       await createSecondTab(window);
-      await preventOpeningFirstTab(window, 50);
+      await preventOpeningFirstTab(window);
     }
   } finally {
     handling--;
@@ -80,9 +80,10 @@ async function handleEvent() {
  * Prevents opening first tab.
  *
  * @param window - Window.
- * @param retries - Number of retries.
  */
-async function preventOpeningFirstTab(window, retries) {
+async function preventOpeningFirstTab(window) {
+  let retries = 50;
+
   await attempt();
 
   async function attempt() {
