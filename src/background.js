@@ -1,5 +1,3 @@
-/* eslint-disable no-await-in-loop -- Ok */
-
 let handling = 0;
 
 importScripts("browser-polyfill.js");
@@ -8,28 +6,6 @@ browser.tabs.onAttached.addListener(handleEvent);
 browser.tabs.onMoved.addListener(handleEvent);
 browser.tabs.onRemoved.addListener(handleEvent);
 browser.tabs.onUpdated.addListener(handleEvent);
-browser.windows.onRemoved.addListener(handleEvent);
-
-/**
- * Creates pinned tab.
- *
- * @param window - Window.
- */
-async function createPinnedTab(window) {
-  const pinnedTabs = await chrome.tabs.query({
-    pinned: true,
-    windowId: window.id
-  });
-
-  if (pinnedTabs.length < 1)
-    await browser.tabs.create({
-      active: false,
-      index: 0,
-      pinned: true,
-      url: "about:blank",
-      windowId: window.id
-    });
-}
 
 /**
  * Creates second tab.
@@ -37,19 +13,52 @@ async function createPinnedTab(window) {
  * @param window - Window.
  */
 async function createSecondTab(window) {
-  if (window.tabs.length < 2) {
-    const firstTab = await browser.tabs.get(window.tabs[0].id);
-
-    if (
-      window.tabs.length < 2 &&
-      firstTab.pinned &&
-      firstTab.url === "about:blank"
-    )
+  await retry(async () => {
+    if (trapInstalled(window) && window.tabs.length === 1)
       await browser.tabs.create({
         url: "chrome://newtab/",
         windowId: window.id
       });
-  }
+  });
+}
+
+/**
+ * Creates trap.
+ *
+ * @param window - Window.
+ */
+async function createTrap(window) {
+  await retry(async () => {
+    if (window.tabs.some(tab => tab.pinned)) {
+      // Do not create trap if there are already pinned tabs
+    } else
+      await browser.tabs.create({
+        active: false,
+        index: 0,
+        pinned: true,
+        url: "about:blank",
+        windowId: window.id
+      });
+  });
+}
+
+/**
+ * Fades trap.
+ *
+ * @param window - Window.
+ */
+async function fadeTrap(window) {
+  await retry(async () => {
+    if (trapInstalled(window) && window.tabs.length >= 2) {
+      const tab = window.tabs[0];
+
+      if (tab.active) {
+        const secondTab = window.tabs[1];
+
+        await browser.tabs.update(secondTab.id, { active: true });
+      }
+    }
+  });
 }
 
 /**
@@ -66,44 +75,77 @@ async function handleEvent() {
       windowTypes: ["normal"]
     });
 
-    for (const window of windows) {
-      await createPinnedTab(window);
-      await createSecondTab(window);
-      await preventOpeningFirstTab(window);
-    }
+    await Promise.all(windows.map(handleWindow));
   } finally {
     handling--;
   }
 }
 
 /**
- * Prevents opening first tab.
+ * Handles Chrome event.
  *
  * @param window - Window.
  */
-async function preventOpeningFirstTab(window) {
+async function handleWindow(window) {
+  await createTrap(window);
+  await createSecondTab(window);
+  await fadeTrap(window);
+  await removeUnnecessaryNewTabs(window);
+}
+
+/**
+ * Removes unnecessary new tabs.
+ *
+ * @param window - Window.
+ */
+async function removeUnnecessaryNewTabs(window) {
+  await retry(async () => {
+    if (trapInstalled(window)) {
+      const tabs = window.tabs
+        .slice(0, -1)
+        .filter(
+          tab => tab.url === "chrome://newtab/" && !tab.active && !tab.pinned
+        );
+
+      await Promise.all(tabs.map(tab => browser.tabs.remove(tab.id)));
+    }
+  });
+}
+
+/**
+ * Retries callback several times.
+ *
+ * @param callback - Callback.
+ */
+async function retry(callback) {
   let retries = 50;
 
   await attempt();
 
   async function attempt() {
-    if (window.tabs.length >= 2) {
-      const firstTab = await browser.tabs.get(window.tabs[0].id);
-
-      if (
-        window.tabs.length >= 2 &&
-        firstTab.active &&
-        firstTab.pinned &&
-        firstTab.url === "about:blank"
-      )
-        try {
-          await browser.tabs.update(window.tabs[1].id, { active: true });
-        } catch {
-          if (retries > 0) {
-            retries--;
-            setTimeout(attempt, 50);
-          }
-        }
+    try {
+      await callback();
+    } catch (e) {
+      if (retries) {
+        retries--;
+        setTimeout(attempt, 50);
+      } else throw e;
     }
   }
+}
+
+/**
+ * Checks if trap is installed.
+ *
+ * @param window - Window.
+ * @returns _True_ if trap is installed, _false_ otherwise.
+ */
+function trapInstalled(window) {
+  if (window.tabs.length >= 1) {
+    const tab = window.tabs[0];
+
+    return tab.url === "about:blank" && tab.pinned;
+  }
+
+  return false;
 }
