@@ -3,8 +3,10 @@
   "displayName": "Keep Open",
   "version": "0.1.0",
   "private": false,
-  "description": "Prevents closing of Google Chrome with the last tab",
+  "description": "Prevents closing of Google Chrome with the last tab.",
   "keywords": [
+    "chrome",
+    "extension",
     "last tab"
   ],
   "homepage": "https://github.com/ilyub/chrome-keep-open",
