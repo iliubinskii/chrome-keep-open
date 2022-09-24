@@ -9,14 +9,7 @@
       "@/*": [
         "src/*"
       ]
-    },
-    "typeRoots": [
-      "node_modules/@types",
-      "node_modules/types-fix"
-    ],
-    "types": [
-      "typescript-any-to-unknown"
-    ]
+    }
   },
   "exclude": [
     "cache",
