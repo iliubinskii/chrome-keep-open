@@ -57,11 +57,11 @@
     "upgrade": "npm run ncu-upgrade && npm run npm:install"
   },
   "dependencies": {
-    "tslib": "^2.4.0"
+    "tslib": "^2.4.1"
   },
   "devDependencies": {
-    "eslint-plugin-misc": "^1.5.0",
-    "real-config": "^1.12.0",
+    "eslint-plugin-misc": "^1.7.0",
+    "real-config": "^1.15.0",
     "webextension-polyfill": "^0.10.0"
   },
   "engines": {
