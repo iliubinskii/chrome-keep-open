@@ -105,7 +105,11 @@
         const tabs = wnd.tabs
           .slice(0, -1)
           .filter(
-            tab => tab.url === "chrome://newtab/" && !tab.active && !tab.pinned
+            tab =>
+              tab.url === "chrome://newtab/" &&
+              tab.status === "complete" &&
+              !tab.active &&
+              !tab.pinned
           );
 
         await Promise.all(tabs.map(tab => browser.tabs.remove(tab.id)));
