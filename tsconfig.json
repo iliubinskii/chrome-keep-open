@@ -33,7 +33,6 @@
     ".stylelintrc.js",
     ".stylelintrc-html.js",
     "src/**/*.js",
-    "src/**/*.ts",
-    "src/**/*.vue"
+    "src/**/*.ts"
   ]
 }
