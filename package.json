@@ -20,9 +20,7 @@
   "license": "ISC",
   "author": "Ilia Liubinskii <admin.phpdev@gmail.com> (https://github.com/ilyub)",
   "publisher": "ilyub",
-  "files": [
-    "/src"
-  ],
+  "files": [],
   "scripts": {
     "add-tags": "php node_modules/real-config/bin/add-tags.php",
     "browserslist": "browserslist",
