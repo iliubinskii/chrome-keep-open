@@ -1,6 +1,7 @@
 # Keep Open extension for Chrome
 
-This extension prevents closing of Google Chrome with the last tab.
+Prevents closing of Google Chrome with the last tab. For this, an empty tab is
+created every time you close your last tab.
 
 Attributions:
 
