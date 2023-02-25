@@ -2,7 +2,7 @@
   "extends": "real-config/tsconfig/strict",
   "compilerOptions": {
     "baseUrl": ".",
-    "outDir": "cache/typescript",
+    "outDir": ".cache/typescript",
     "paths": {
       "@": [
         "src"
@@ -13,7 +13,7 @@
     }
   },
   "exclude": [
-    "cache",
+    ".cache",
     "dist",
     "docs",
     "es",
