@@ -1,7 +1,7 @@
 {
   "name": "Keep open",
   "description": "Prevents closing of Google Chrome with the last tab.",
-  "version": "0.4.0",
+  "version": "1.0.0",
   "background": {
     "service_worker": "background.js"
   },
