@@ -59,8 +59,8 @@
     "tslib": "^2.5.0"
   },
   "devDependencies": {
-    "eslint-plugin-misc": "^1.9.5",
-    "real-config": "^1.24.0",
+    "eslint-plugin-misc": "^1.10.0",
+    "real-config": "^1.29.0",
     "webextension-polyfill": "^0.10.0"
   },
   "engines": {
