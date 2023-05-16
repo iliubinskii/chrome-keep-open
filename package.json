@@ -60,7 +60,7 @@
   },
   "devDependencies": {
     "eslint-plugin-misc": "^1.10.0",
-    "real-config": "^1.29.0",
+    "real-config": "^1.31.0",
     "webextension-polyfill": "^0.10.0"
   },
   "engines": {
