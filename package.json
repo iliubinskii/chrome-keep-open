@@ -9,17 +9,17 @@
     "chrome extension",
     "extension"
   ],
-  "homepage": "https://github.com/ilyub/chrome-keep-open",
+  "homepage": "https://github.com/iliubinskii/chrome-keep-open",
   "bugs": {
-    "url": "https://github.com/ilyub/chrome-keep-open/issues"
+    "url": "https://github.com/iliubinskii/chrome-keep-open/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/ilyub/chrome-keep-open.git"
+    "url": "git://github.com/iliubinskii/chrome-keep-open.git"
   },
   "license": "ISC",
-  "author": "Ilia Liubinskii <admin.phpdev@gmail.com> (https://github.com/ilyub)",
-  "publisher": "ilyub",
+  "author": "Ilia Liubinskii <admin.phpdev@gmail.com> (https://github.com/iliubinskii)",
+  "publisher": "iliubinskii",
   "files": [],
   "scripts": {
     "add-tags": "php node_modules/real-config/bin/add-tags.php",
