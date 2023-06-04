@@ -55,7 +55,7 @@
     "update": "npm update --no-audit --strict-peer-deps"
   },
   "dependencies": {
-    "tslib": "2.5.2"
+    "tslib": "2.5.3"
   },
   "devDependencies": {
     "eslint-plugin-misc": "1.10.1",
