@@ -11,9 +11,6 @@
     "[jsonc]": {
       "editor.defaultFormatter": "vscode.json-language-features"
     },
-    "[php]": {
-      "editor.defaultFormatter": "junstyle.php-cs-fixer"
-    },
     "[scss]": {
       "editor.formatOnSave": false
     },
@@ -22,8 +19,8 @@
     },
     "debug.javascript.codelens.npmScripts": "never",
     "editor.codeActionsOnSave": {
-      "source.fixAll": true,
-      "source.fixAll.eslint": true
+      "source.fixAll": "explicit",
+      "source.sortPackageJson": "explicit"
     },
     "editor.detectIndentation": false,
     "editor.foldingStrategy": "indentation",
@@ -56,13 +53,8 @@
     ],
     "javascript.suggestionActions.enabled": false,
     "javascript.updateImportsOnFileMove.enabled": "always",
-    "php-cs-fixer.autoFixByBracket": true,
-    "php-cs-fixer.executablePath": "${workspaceFolder}/vendor/bin/php-cs-fixer",
-    "php-cs-fixer.executablePathWindows": "${workspaceFolder}/vendor/bin/php-cs-fixer.bat",
-    "php-cs-fixer.onsave": true,
     "search.exclude": {
       "CHANGELOG.md": true,
-      "composer.lock": true,
       "dist": true,
       "docs": true,
       "es": true,
@@ -89,20 +81,6 @@
         "orientation",
         "userInterfaceStyle"
       ],
-      "composer.json": [
-        "name",
-        "description",
-        "keywords",
-        "type",
-        "minimum-stability",
-        "prefer-stable",
-        "private",
-        "license",
-        "homepage",
-        "archive",
-        "authors",
-        "require-dev"
-      ],
       "manifest.json": [
         "name",
         "short_name",
@@ -111,6 +89,33 @@
         "background_color",
         "theme_color",
         "icons"
+      ],
+      "package.json": [
+        "name",
+        "displayName",
+        "version",
+        "private",
+        "description",
+        "keywords",
+        "homepage",
+        "bugs",
+        "repository",
+        "license",
+        "author",
+        "publisher",
+        "exports",
+        "main",
+        "module",
+        "types",
+        "files",
+        "scripts",
+        "jest",
+        "dependencies",
+        "devDependencies",
+        "peerDependencies",
+        "engines",
+        "publishConfig",
+        "overrides"
       ],
       "tsconfig-build-es.json": [
         "extends"
@@ -141,9 +146,8 @@
     "typescript.suggestionActions.enabled": false,
     "typescript.tsdk": "node_modules\\typescript\\lib",
     "typescript.updateImportsOnFileMove.enabled": "always",
-    "vue.codeActions.savingTimeLimit": 30000,
     "workbench.colorCustomizations": {
-      "editor.foldBackground": "#0000"
+      "editor.foldBackground": "#00000000"
     },
     "workbench.startupEditor": "none",
     "workbench.tree.indent": 30
