@@ -1,4 +1,4 @@
-const { eslint } = require("real-config/api");
+const { eslint } = require("project-chore/api");
 
 const spellChecker = eslint.rules["spellcheck/spell-checker"];
 
