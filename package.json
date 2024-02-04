@@ -1,7 +1,7 @@
 {
   "name": "keep-open",
   "displayName": "Keep Open",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": false,
   "description": "Prevents closing of Google Chrome with the last tab.",
   "keywords": [
