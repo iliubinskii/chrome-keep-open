@@ -1,9 +1,5 @@
 # Keep Open extension for Chrome
 
-[![Version](https://img.shields.io/chrome-web-store/v/mgmnpfmdmnmjniadliolifcoopgbocob)](https://chrome.google.com/webstore/detail/keep-open/mgmnpfmdmnmjniadliolifcoopgbocob)
-[![Users](https://img.shields.io/chrome-web-store/users/mgmnpfmdmnmjniadliolifcoopgbocob)](https://chrome.google.com/webstore/detail/keep-open/mgmnpfmdmnmjniadliolifcoopgbocob)
-[![Stars](https://img.shields.io/chrome-web-store/stars/mgmnpfmdmnmjniadliolifcoopgbocob)](https://chrome.google.com/webstore/detail/keep-open/mgmnpfmdmnmjniadliolifcoopgbocob)
-
 Prevents closing of Google Chrome with the last tab. For this, an empty tab is
 created every time you close your last tab.
 
