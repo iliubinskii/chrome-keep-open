@@ -11,7 +11,7 @@ const config = {
     chrome: "readonly",
     importScripts: "readonly"
   },
-  extends: "./.eslintrc.base.cjs",
+  extends: "union",
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaFeatures: { jsx: true },
@@ -26,7 +26,7 @@ const config = {
         cspell: {
           words:
             // @sorted
-            ["escompat", "newtab", "packagejson", "sonarjs"]
+            ["cjsx", "mjsx", "newtab", "packagejson"]
         }
       }
     ]

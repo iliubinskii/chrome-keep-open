@@ -7,4 +7,7 @@ created every time you close your last tab.
 - [See at GitHub](https://github.com/iliubinskii/chrome-keep-open)
 - [Support](https://github.com/iliubinskii/chrome-keep-open/issues)
 
-Attributions: icon by <a href="https://freeicons.io/profile/722">Fasil</a> on freeicons.io; <a href="https://www.freepik.com/free-vector/open-book-isolated_10604146.htm">image</a> by macrovector on Freepik
+Attributions:
+
+- Icon by <a href="https://freeicons.io/profile/722">Fasil</a> on freeicons.io
+- <a href="https://www.freepik.com/free-vector/open-book-isolated_10604146.htm">Image</a> by macrovector on Freepik
