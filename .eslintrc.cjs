@@ -26,7 +26,7 @@ const config = {
         cspell: {
           words:
             // @sorted
-            ["escompat", "newtab", "sonarjs"]
+            ["escompat", "newtab", "packagejson", "sonarjs"]
         }
       }
     ]
