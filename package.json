@@ -1,7 +1,7 @@
 {
   "name": "keep-open",
   "displayName": "Keep Open",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "private": false,
   "description": "Keep Open extension for Chrome",
   "keywords": [
