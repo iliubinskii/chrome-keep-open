@@ -43,7 +43,7 @@
   "devDependencies": {
     "@types/chrome": "^0.0",
     "@types/firefox-webext-browser": "^120",
-    "eslint-config-union": "^1.1.0",
+    "eslint-config-union": "^1.2.0",
     "typescript": "^5",
     "webextension-polyfill": "^0.12"
   },

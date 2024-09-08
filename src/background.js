@@ -1,27 +1,118 @@
 (() => {
+  const MAX_RETRIES = 50;
+
   const RETRY_TIMEOUT_MS = 50;
 
-  let handling = 0;
-
-  importScripts("browser-polyfill.js");
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises -- Ok
-  browser.tabs.onActivated.addListener(handleEvent);
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises -- Ok
-  browser.tabs.onAttached.addListener(handleEvent);
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises -- Ok
-  browser.tabs.onMoved.addListener(handleEvent);
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises -- Ok
-  browser.tabs.onRemoved.addListener(handleEvent);
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises -- Ok
-  browser.tabs.onUpdated.addListener(handleEvent);
+  let handlingEvent = 0;
 
   /**
-   * Creates second tab.
+   * @type {Set<number>}
+   */
+  const windowsWithTrap = new Set();
+
+  importScripts("browser-polyfill.js");
+
+  /* eslint-disable @typescript-eslint/no-misused-promises -- Ok */
+
+  browser.tabs.onActivated.addListener(handleEvent);
+  browser.tabs.onAttached.addListener(handleEvent);
+  browser.tabs.onMoved.addListener(handleEvent);
+  browser.tabs.onRemoved.addListener(onRemoved);
+  browser.tabs.onUpdated.addListener(onUpdated);
+
+  /* eslint-enable @typescript-eslint/no-misused-promises -- Ok */
+
+  /**
+   * Handles Chrome event.
+   * @param {number} _tabId - Tab ID.
+   * @param {browser.tabs._OnRemovedRemoveInfo} info - Info.
+   */
+  async function onRemoved(_tabId, info) {
+    const { windowId } = info;
+
+    windowsWithTrap.delete(windowId);
+
+    await handleEvent();
+  }
+
+  /**
+   * Handles Chrome event.
+   * @param {number} _tabId - Tab ID.
+   * @param {browser.tabs._OnUpdatedChangeInfo} _info - Info.
+   * @param {browser.tabs.Tab} tab - Tab.
+   */
+  async function onUpdated(_tabId, _info, tab) {
+    const { windowId = -1 } = tab;
+
+    windowsWithTrap.delete(windowId);
+
+    await handleEvent();
+  }
+
+  /**
+   * Handles Chrome event.
+   */
+  async function handleEvent() {
+    if (handlingEvent) return;
+
+    handlingEvent++;
+
+    try {
+      const windows = await chrome.windows.getAll({
+        populate: true,
+        windowTypes: ["normal"]
+      });
+
+      await Promise.allSettled(windows.map(updateWindow));
+    } finally {
+      handlingEvent--;
+    }
+  }
+
+  /**
+   * Updates window.
    * @param {chrome.windows.Window} wnd - Window.
    */
-  async function createSecondTab(wnd) {
-    await retry(async () => {
-      if (trapInstalled(wnd) && wnd.tabs && wnd.tabs.length === 1)
+  async function updateWindow(wnd) {
+    await createTrap(wnd);
+    await createUnpinnedTab(wnd);
+    await fadeTrap(wnd);
+    await removeUnnecessaryNewTabs(wnd);
+  }
+
+  /**
+   * Creates trap tab if it's missing.
+   * @param {chrome.windows.Window} wnd - Window.
+   */
+  async function createTrap(wnd) {
+    await withRetries(async () => {
+      if (trapInstalledOrNotNeeded(wnd)) {
+        // Skip
+      } else {
+        const { id } = wnd;
+
+        if (id) {
+          await browser.tabs.create({
+            active: false,
+            index: 0,
+            pinned: true,
+            url: "about:blank",
+            windowId: id
+          });
+
+          windowsWithTrap.add(id);
+        }
+      }
+    });
+  }
+
+  /**
+   * Creates unpinned tab if it's missing.
+   * @param {chrome.windows.Window} wnd - Window.
+   */
+  async function createUnpinnedTab(wnd) {
+    await withRetries(async () => {
+      if (trapFocused(wnd) && wnd.tabs && wnd.tabs.every(tab => tab.pinned))
         await browser.tabs.create({
           url: "chrome://newtab/",
           windowId: wnd.id
@@ -30,81 +121,27 @@
   }
 
   /**
-   * Creates trap.
-   * @param {chrome.windows.Window} wnd - Window.
-   */
-  async function createTrap(wnd) {
-    await retry(async () => {
-      if (wnd.tabs && wnd.tabs.some(tab => tab.pinned)) {
-        // Do not create trap if there are already pinned tabs
-      } else
-        await browser.tabs.create({
-          active: false,
-          index: 0,
-          pinned: true,
-          url: "about:blank",
-          windowId: wnd.id
-        });
-    });
-  }
-
-  /**
-   * Fade trap.
+   * Fades trap if it's focused.
    * @param {chrome.windows.Window} wnd - Window.
    */
   async function fadeTrap(wnd) {
-    await retry(async () => {
-      if (trapInstalled(wnd) && wnd.tabs && wnd.tabs.length >= 2) {
-        const tab = wnd.tabs[0];
+    await withRetries(async () => {
+      if (trapFocused(wnd) && wnd.tabs) {
+        const unpinnedTab = wnd.tabs.find(tab => !tab.pinned);
 
-        if (tab && tab.active) {
-          const secondTab = wnd.tabs[1];
-
-          if (secondTab && typeof secondTab.id === "number")
-            await browser.tabs.update(secondTab.id, { active: true });
-        }
+        if (unpinnedTab && unpinnedTab.id)
+          await browser.tabs.update(unpinnedTab.id, { active: true });
       }
     });
   }
 
   /**
-   * Handles Chrome event.
-   */
-  async function handleEvent() {
-    if (handling) return;
-
-    handling++;
-
-    try {
-      const windows = await chrome.windows.getAll({
-        populate: true,
-        windowTypes: ["normal"]
-      });
-
-      await Promise.all(windows.map(handleWindow));
-    } finally {
-      handling--;
-    }
-  }
-
-  /**
-   * Handles Chrome event.
-   * @param {chrome.windows.Window} wnd - Window.
-   */
-  async function handleWindow(wnd) {
-    await createTrap(wnd);
-    await createSecondTab(wnd);
-    await fadeTrap(wnd);
-    await removeUnnecessaryNewTabs(wnd);
-  }
-
-  /**
-   * Removes unnecessary new tabs.
+   * Removes unnecessary new tabs leaving only the last one.
    * @param {chrome.windows.Window} wnd - Window.
    */
   async function removeUnnecessaryNewTabs(wnd) {
-    await retry(async () => {
-      if (trapInstalled(wnd) && wnd.tabs) {
+    await withRetries(async () => {
+      if (wnd.tabs) {
         const tabs = wnd.tabs
           .slice(0, -1)
           .filter(
@@ -115,9 +152,9 @@
               !tab.pinned
           );
 
-        await Promise.all(
+        await Promise.allSettled(
           tabs.map(async tab => {
-            if (typeof tab.id === "number") await browser.tabs.remove(tab.id);
+            if (tab.id) await browser.tabs.remove(tab.id);
           })
         );
       }
@@ -128,38 +165,63 @@
    * Retries callback several times.
    * @param {() => Promise<void>} callback - Callback.
    */
-  async function retry(callback) {
-    let retries = 50;
+  async function withRetries(callback) {
+    let retries = MAX_RETRIES;
 
-    await attempt();
+    await retry();
 
     /**
      * Attempts to execute callback.
      */
-    async function attempt() {
+    async function retry() {
       try {
         await callback();
       } catch (err) {
         if (retries) {
           retries--;
+
           // eslint-disable-next-line @typescript-eslint/no-misused-promises -- Ok
-          setTimeout(attempt, RETRY_TIMEOUT_MS);
+          setTimeout(retry, RETRY_TIMEOUT_MS);
         } else throw err;
       }
     }
   }
 
   /**
-   * Checks if trap is installed.
+   * Checks if trap is focused.
    * @param {chrome.windows.Window} wnd - Window.
-   * @returns _True_ if trap is installed, _false_ otherwise.
+   * @returns {boolean} _True_ if trap is installed, _false_ otherwise.
    */
-  function trapInstalled(wnd) {
-    if (wnd.tabs && wnd.tabs.length > 0) {
-      const tab = wnd.tabs[0];
+  function trapFocused(wnd) {
+    if (
+      wnd.tabs &&
+      wnd.tabs.some(
+        tab =>
+          tab.active &&
+          tab.pinned &&
+          tab.url === "about:blank" &&
+          tab.status === "complete"
+      )
+    )
+      return true;
 
-      return tab && tab.url === "about:blank" && tab.pinned;
-    }
+    return false;
+  }
+
+  /**
+   * Checks if trap is installed or not needed.
+   * @param {chrome.windows.Window} wnd - Window.
+   * @returns {boolean} _True_ if trap is installed or not needed, _false_ otherwise.
+   */
+  function trapInstalledOrNotNeeded(wnd) {
+    // Trap is installed based on flag being set
+    if (wnd.id && windowsWithTrap.has(wnd.id)) return true;
+
+    // Trap is not needed when it's not the last tab
+    if (wnd.tabs && wnd.tabs.length > 1) return true;
+
+    // Trap is not needed when there are pinned tabs
+    if (wnd.tabs && wnd.tabs.some(tab => tab.pinned)) return true;
 
     return false;
   }

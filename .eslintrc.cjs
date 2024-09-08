@@ -26,10 +26,22 @@ const config = {
         cspell: {
           words:
             // @sorted
-            ["cjsx", "mjsx", "newtab", "packagejson"]
+            ["cjsx", "mjsx", "newtab", "packagejson", "sonarjs"]
         }
       }
-    ]
+    ],
+    "eslint-comments/no-use": [
+      "warn",
+      {
+        allow: [
+          "eslint",
+          "eslint-disable",
+          "eslint-disable-next-line",
+          "eslint-enable"
+        ]
+      }
+    ],
+    "sonarjs/prefer-single-boolean-return": "off"
   }
 };
 
